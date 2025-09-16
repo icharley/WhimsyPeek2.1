@@ -21,7 +21,6 @@ export default function Home() {
     );
   }
 
-  // Type guard: check session.user and its essential properties exist
   const user = session?.user;
   const canShowDashboard =
     user && (user.name || user.email || user.image || user.id);
