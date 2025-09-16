@@ -21,22 +21,13 @@ export default function Home() {
     );
   }
 
-  // If session.user is undefined, don't render Dashboard
-  if (!session?.user) {
-    return <AuthForm />;
-  }
-
-  // Explicitly assert that user matches Dashboard's User interface
-  const user = {
-    id: (session.user.id as string) || undefined,
-    name: session.user.name || undefined,
-    email: session.user.email || undefined,
-    image: session.user.image || undefined,
-  };
-
   return (
     <div className="min-h-screen">
-      <Dashboard user={user} />
+      {session && session.user ? (
+        <Dashboard user={session.user} />
+      ) : (
+        <AuthForm />
+      )}
     </div>
   );
 }
