@@ -12,12 +12,16 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  password: {
+    type: String
+  },
   image: {
     type: String
   },
   provider: {
     type: String,
-    default: 'google'
+    enum: ['email', 'google'],
+    default: 'email'
   },
   providerId: {
     type: String

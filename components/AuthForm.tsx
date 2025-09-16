@@ -1,11 +1,81 @@
 'use client'
 
 import { signIn } from 'next-auth/react'
+import { useState } from 'react'
 import { Sparkles } from 'lucide-react'
 
 export default function AuthForm() {
+  const [isLogin, setIsLogin] = useState(true)
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    name: ''
+  })
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
   const handleGoogleSignIn = () => {
     signIn('google', { callbackUrl: '/' })
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+
+    try {
+      if (isLogin) {
+        // Login with credentials
+        const result = await signIn('credentials', {
+          email: formData.email,
+          password: formData.password,
+          redirect: false
+        })
+
+        if (result?.error) {
+          setError('Invalid email or password')
+        } else {
+          window.location.href = '/'
+        }
+      } else {
+        // Register new user
+        const response = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        })
+
+        const data = await response.json()
+
+        if (response.ok) {
+          // Auto-login after successful registration
+          const result = await signIn('credentials', {
+            email: formData.email,
+            password: formData.password,
+            redirect: false
+          })
+
+          if (!result?.error) {
+            window.location.href = '/'
+          }
+        } else {
+          setError(data.message || 'Registration failed')
+        }
+      }
+    } catch (error) {
+      setError('An error occurred. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    })
   }
 
   return (
@@ -23,8 +93,97 @@ export default function AuthForm() {
 
         <div className="card p-8">
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome!</h2>
-            <p className="text-gray-600">Sign in to start creating your idea sessions</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              {isLogin ? 'Welcome Back!' : 'Join Whimsy Peek'}
+            </h2>
+            <p className="text-gray-600">
+              {isLogin ? 'Sign in to continue your journey' : 'Create an account to get started'}
+            </p>
+          </div>
+
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4 mb-6">
+            {!isLogin && (
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                  Name (optional)
+                </label>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  placeholder="Your preferred name"
+                />
+              </div>
+            )}
+            
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                Email
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                value={formData.email}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                placeholder="your@email.com"
+              />
+            </div>
+            
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                value={formData.password}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                placeholder="••••••••"
+                minLength={6}
+              />
+              {!isLogin && (
+                <p className="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
+              )}
+            </div>
+            
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? (
+                <div className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  {isLogin ? 'Signing in...' : 'Creating account...'}
+                </div>
+              ) : (
+                isLogin ? 'Sign In' : 'Create Account'
+              )}
+            </button>
+          </form>
+
+          <div className="relative mb-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">Or continue with</span>
+            </div>
           </div>
 
           <button
@@ -51,6 +210,20 @@ export default function AuthForm() {
             </svg>
             Continue with Google
           </button>
+
+          <div className="mt-6 text-center">
+            <button
+              type="button"
+              onClick={() => {
+                setIsLogin(!isLogin)
+                setError('')
+                setFormData({ email: '', password: '', name: '' })
+              }}
+              className="text-primary-600 hover:text-primary-700 text-sm font-medium"
+            >
+              {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
+            </button>
+          </div>
 
           <div className="mt-6 text-center">
             <p className="text-xs text-gray-500">

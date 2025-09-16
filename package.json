@@ -9,15 +9,16 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "next": "^14.0.4",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "mongoose": "^8.0.3",
+    "@types/bcryptjs": "^2.4.6",
+    "axios": "^1.6.2",
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.2",
-    "next-auth": "^4.24.5",
-    "axios": "^1.6.2",
     "lucide-react": "^0.294.0",
+    "mongoose": "^8.0.3",
+    "next": "^14.0.4",
+    "next-auth": "^4.24.11",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "use-sound": "^4.0.1"
   },
   "devDependencies": {
