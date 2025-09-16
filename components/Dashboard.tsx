@@ -1,132 +1,141 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { signOut } from 'next-auth/react'
-import { Plus, LogOut, Sparkles, Search, Settings } from 'lucide-react'
-import Link from 'next/link'
-import SessionCard from './SessionCard'
-import SessionModal from './SessionModal'
-import PeekModal from './PeekModal'
+import { useState, useEffect } from "react";
+import { signOut } from "next-auth/react";
+import { Plus, LogOut, Sparkles, Search, Settings } from "lucide-react";
+import Link from "next/link";
+import SessionCard from "./SessionCard";
+import SessionModal from "./SessionModal";
+import PeekModal from "./PeekModal";
 
 interface Session {
-  _id: string
-  title: string
-  description: string
-  ideas: string[]
-  peekCount: number
-  lastPeekedAt?: string
-  createdAt: string
-  updatedAt: string
+  _id: string;
+  title: string;
+  description: string;
+  ideas: string[];
+  peekCount: number;
+  lastPeekedAt?: string;
+  createdAt: string;
+  updatedAt: string;
 }
-
+// User type from NextAuth session
 interface User {
-  id?: string
-  name?: string | null
-  email?: string | null
-  image?: string | null
+  id?: string;
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
 }
 
 interface DashboardProps {
-  user: User
+  user: User;
 }
 
 export default function Dashboard({ user }: DashboardProps) {
-  const [sessions, setSessions] = useState<Session[]>([])
-  const [filteredSessions, setFilteredSessions] = useState<Session[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [showSessionModal, setShowSessionModal] = useState(false)
-  const [editingSession, setEditingSession] = useState<Session | null>(null)
-  const [peekSession, setPeekSession] = useState<Session | null>(null)
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [filteredSessions, setFilteredSessions] = useState<Session[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSessionModal, setShowSessionModal] = useState(false);
+  const [editingSession, setEditingSession] = useState<Session | null>(null);
+  const [peekSession, setPeekSession] = useState<Session | null>(null);
 
   useEffect(() => {
-    loadSessions()
-  }, [])
+    loadSessions();
+  }, []);
 
   useEffect(() => {
-    if (searchQuery.trim() === '') {
-      setFilteredSessions(sessions)
+    if (searchQuery.trim() === "") {
+      setFilteredSessions(sessions);
     } else {
-      const filtered = sessions.filter(session => 
-        session.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        session.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        session.ideas.some(idea => idea.toLowerCase().includes(searchQuery.toLowerCase()))
-      )
-      setFilteredSessions(filtered)
+      const filtered = sessions.filter(
+        (session) =>
+          session.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          session.description
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          session.ideas.some((idea) =>
+            idea.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+      );
+      setFilteredSessions(filtered);
     }
-  }, [sessions, searchQuery])
+  }, [sessions, searchQuery]);
 
   const loadSessions = async () => {
     try {
-      const response = await fetch('/api/sessions')
+      const response = await fetch("/api/sessions");
       if (response.ok) {
-        const data = await response.json()
-        setSessions(data)
+        const data = await response.json();
+        setSessions(data);
       }
     } catch (error) {
-      console.error('Failed to load sessions:', error)
+      console.error("Failed to load sessions:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleCreateSession = () => {
-    setEditingSession(null)
-    setShowSessionModal(true)
-  }
+    setEditingSession(null);
+    setShowSessionModal(true);
+  };
 
   const handleEditSession = (session: Session) => {
-    setEditingSession(session)
-    setShowSessionModal(true)
-  }
+    setEditingSession(session);
+    setShowSessionModal(true);
+  };
 
   const handleDeleteSession = async (sessionId: string) => {
-    if (window.confirm('Are you sure you want to delete this session?')) {
+    if (window.confirm("Are you sure you want to delete this session?")) {
       try {
         const response = await fetch(`/api/sessions/${sessionId}`, {
-          method: 'DELETE'
-        })
+          method: "DELETE",
+        });
         if (response.ok) {
-          setSessions(sessions.filter(s => s._id !== sessionId))
+          setSessions(sessions.filter((s) => s._id !== sessionId));
         }
       } catch (error) {
-        console.error('Failed to delete session:', error)
+        console.error("Failed to delete session:", error);
       }
     }
-  }
+  };
 
   const handleSessionSaved = (savedSession: Session) => {
     if (editingSession) {
-      setSessions(sessions.map(s => s._id === savedSession._id ? savedSession : s))
+      setSessions(
+        sessions.map((s) => (s._id === savedSession._id ? savedSession : s))
+      );
     } else {
-      setSessions([savedSession, ...sessions])
+      setSessions([savedSession, ...sessions]);
     }
-    setShowSessionModal(false)
-    setEditingSession(null)
-  }
+    setShowSessionModal(false);
+    setEditingSession(null);
+  };
 
   const handlePeek = (session: Session) => {
     if (session.ideas.length === 0) {
-      alert('This session has no ideas to peek at!')
-      return
+      alert("This session has no ideas to peek at!");
+      return;
     }
-    setPeekSession(session)
-  }
+    setPeekSession(session);
+  };
 
   const handlePeekComplete = (updatedSession: Session) => {
-    setSessions(sessions.map(s => s._id === updatedSession._id ? updatedSession : s))
-  }
+    setSessions(
+      sessions.map((s) => (s._id === updatedSession._id ? updatedSession : s))
+    );
+  };
 
   const handleLogout = () => {
-    signOut({ callbackUrl: '/' })
-  }
+    signOut({ callbackUrl: "/" });
+  };
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
       </div>
-    )
+    );
   }
 
   return (
@@ -140,7 +149,9 @@ export default function Dashboard({ user }: DashboardProps) {
               <h1 className="text-2xl font-bold text-gray-900">Whimsy Peek</h1>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-gray-600">Welcome, {user.name || user.email}</span>
+              <span className="text-gray-600">
+                Welcome, {user.name || user.email}
+              </span>
               <Link
                 href="/settings"
                 className="p-2 text-gray-600 hover:text-gray-900 transition-colors"
@@ -170,7 +181,9 @@ export default function Dashboard({ user }: DashboardProps) {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900">Your Idea Sessions</h2>
+            <h2 className="text-3xl font-bold text-gray-900">
+              Your Idea Sessions
+            </h2>
             <p className="text-gray-600 mt-1">
               Create sessions and let whimsy guide your next adventure
             </p>
@@ -203,28 +216,26 @@ export default function Dashboard({ user }: DashboardProps) {
             {searchQuery ? (
               <>
                 <Search className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-xl font-medium text-gray-900 mb-2">No results found</h3>
+                <h3 className="text-xl font-medium text-gray-900 mb-2">
+                  No results found
+                </h3>
                 <p className="text-gray-600 mb-6">
                   Try adjusting your search terms or create a new session
                 </p>
-                <button
-                  onClick={handleCreateSession}
-                  className="btn-primary"
-                >
+                <button onClick={handleCreateSession} className="btn-primary">
                   Create New Session
                 </button>
               </>
             ) : (
               <>
                 <Sparkles className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-xl font-medium text-gray-900 mb-2">No sessions yet</h3>
+                <h3 className="text-xl font-medium text-gray-900 mb-2">
+                  No sessions yet
+                </h3>
                 <p className="text-gray-600 mb-6">
                   Create your first idea session to get started with Whimsy Peek
                 </p>
-                <button
-                  onClick={handleCreateSession}
-                  className="btn-primary"
-                >
+                <button onClick={handleCreateSession} className="btn-primary">
                   Create Your First Session
                 </button>
               </>
@@ -251,8 +262,8 @@ export default function Dashboard({ user }: DashboardProps) {
           session={editingSession}
           onSave={handleSessionSaved}
           onClose={() => {
-            setShowSessionModal(false)
-            setEditingSession(null)
+            setShowSessionModal(false);
+            setEditingSession(null);
           }}
         />
       )}
@@ -265,5 +276,5 @@ export default function Dashboard({ user }: DashboardProps) {
         />
       )}
     </div>
-  )
+  );
 }
