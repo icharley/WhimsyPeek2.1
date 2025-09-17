@@ -1,82 +1,82 @@
-'use client'
+"use client";
 
-import { signIn } from 'next-auth/react'
-import { useState } from 'react'
-import { Sparkles } from 'lucide-react'
+import { signIn } from "next-auth/react";
+import { useState } from "react";
+import { Sparkles } from "lucide-react";
 
 export default function AuthForm() {
-  const [isLogin, setIsLogin] = useState(true)
+  const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    name: ''
-  })
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+    email: "",
+    password: "",
+    name: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleGoogleSignIn = () => {
-    signIn('google', { callbackUrl: '/' })
-  }
+    signIn("google", { callbackUrl: "/" });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
     try {
       if (isLogin) {
         // Login with credentials
-        const result = await signIn('credentials', {
+        const result = await signIn("credentials", {
           email: formData.email,
           password: formData.password,
-          redirect: false
-        })
+          redirect: false,
+        });
 
         if (result?.error) {
-          setError('Invalid email or password')
+          setError("Invalid email or password");
         } else {
-          window.location.href = '/'
+          window.location.href = "/";
         }
       } else {
         // Register new user
-        const response = await fetch('/api/auth/register', {
-          method: 'POST',
+        const response = await fetch("/api/auth/register", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(formData)
-        })
+          body: JSON.stringify(formData),
+        });
 
-        const data = await response.json()
+        const data = await response.json();
 
         if (response.ok) {
           // Auto-login after successful registration
-          const result = await signIn('credentials', {
+          const result = await signIn("credentials", {
             email: formData.email,
             password: formData.password,
-            redirect: false
-          })
+            redirect: false,
+          });
 
           if (!result?.error) {
-            window.location.href = '/'
+            window.location.href = "/";
           }
         } else {
-          setError(data.message || 'Registration failed')
+          setError(data.message || "Registration failed");
         }
       }
     } catch (error) {
-      setError('An error occurred. Please try again.')
+      setError("An error occurred. Please try again.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
+      [e.target.name]: e.target.value,
+    });
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-primary-50 to-accent-50">
@@ -87,17 +87,22 @@ export default function AuthForm() {
             <h1 className="text-4xl font-bold text-gray-900">Whimsy Peek</h1>
           </div>
           <p className="text-gray-600">
-            Discover your next great idea with a magical peek
+            🎲 Turn everyday decisions into playful moments ✨
+          </p>
+          <p className="text-sm text-gray-500 mt-2">
+            Create a PeekList → Shuffle the Deck → Let Whimsy Decide!
           </p>
         </div>
 
         <div className="card p-8">
           <div className="text-center mb-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              {isLogin ? 'Welcome Back!' : 'Join Whimsy Peek'}
+              {isLogin ? "Welcome Back!" : "Join Whimsy Peek"}
             </h2>
             <p className="text-gray-600">
-              {isLogin ? 'Sign in to continue your journey' : 'Create an account to get started'}
+              {isLogin
+                ? "Sign in to continue your journey"
+                : "Create an account to get started"}
             </p>
           </div>
 
@@ -110,7 +115,10 @@ export default function AuthForm() {
           <form onSubmit={handleSubmit} className="space-y-4 mb-6">
             {!isLogin && (
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Name (optional)
                 </label>
                 <input
@@ -124,9 +132,12 @@ export default function AuthForm() {
                 />
               </div>
             )}
-            
+
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Email
               </label>
               <input
@@ -140,9 +151,12 @@ export default function AuthForm() {
                 placeholder="your@email.com"
               />
             </div>
-            
+
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Password
               </label>
               <input
@@ -157,10 +171,12 @@ export default function AuthForm() {
                 minLength={6}
               />
               {!isLogin && (
-                <p className="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Minimum 6 characters
+                </p>
               )}
             </div>
-            
+
             <button
               type="submit"
               disabled={loading}
@@ -169,10 +185,12 @@ export default function AuthForm() {
               {loading ? (
                 <div className="flex items-center justify-center">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  {isLogin ? 'Signing in...' : 'Creating account...'}
+                  {isLogin ? "Signing in..." : "Creating account..."}
                 </div>
+              ) : isLogin ? (
+                "Sign In"
               ) : (
-                isLogin ? 'Sign In' : 'Create Account'
+                "Create Account"
               )}
             </button>
           </form>
@@ -182,7 +200,9 @@ export default function AuthForm() {
               <div className="w-full border-t border-gray-300" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or continue with</span>
+              <span className="px-2 bg-white text-gray-500">
+                Or continue with
+              </span>
             </div>
           </div>
 
@@ -215,23 +235,26 @@ export default function AuthForm() {
             <button
               type="button"
               onClick={() => {
-                setIsLogin(!isLogin)
-                setError('')
-                setFormData({ email: '', password: '', name: '' })
+                setIsLogin(!isLogin);
+                setError("");
+                setFormData({ email: "", password: "", name: "" });
               }}
               className="text-primary-600 hover:text-primary-700 text-sm font-medium"
             >
-              {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
+              {isLogin
+                ? "Don't have an account? Sign up"
+                : "Already have an account? Sign in"}
             </button>
           </div>
 
           <div className="mt-6 text-center">
             <p className="text-xs text-gray-500">
-              By signing in, you agree to our Terms of Service and Privacy Policy
+              By signing in, you agree to our Terms of Service and Privacy
+              Policy
             </p>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
