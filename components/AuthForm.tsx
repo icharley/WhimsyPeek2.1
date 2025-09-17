@@ -86,9 +86,10 @@ export default function AuthForm() {
             <Sparkles className="h-12 w-12 text-primary-600 mr-2" />
             <h1 className="text-4xl font-bold text-gray-900">Whimsy Peek</h1>
           </div>
-          <p className="text-gray-600">
-            🎲 Turn everyday decisions into playful moments ✨
+          <p className="text-gray-600 mx-0">
+            🎲 Turn every decisions into playful moments ✨
           </p>
+          <p className="text-gray-600 mx-0">😁 Enjoy with your loved ones 🫂</p>
           <p className="text-sm text-gray-500 mt-2">
             Create PeekLists → hit the Peek → Let Whimsy Decide!
           </p>
