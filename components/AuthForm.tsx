@@ -90,7 +90,7 @@ export default function AuthForm() {
             🎲 Turn every decisions into playful moments ✨
           </p>
           <p className="text-gray-600 mx-0">😁 Enjoy with your loved ones 🫂</p>
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-sm text-gray-500 mt-4">
             Create PeekLists → hit the Peek → Let Whimsy Decide!
           </p>
         </div>

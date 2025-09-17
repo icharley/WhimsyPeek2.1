@@ -183,7 +183,7 @@ export default function Dashboard({ user }: DashboardProps) {
               {user.name || user.email}'s PeekLists
             </h2>
             <p className="text-gray-600 mt-1">
-              ✨ Create PeekLists → hit the Peek 🎲 → Let Whimsy Decide!✨
+              🎯 Create PeekLists → hit the Peek 🎲 → Let Whimsy Decide!✨
             </p>
           </div>
           <button
@@ -218,23 +218,23 @@ export default function Dashboard({ user }: DashboardProps) {
                   No results found
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  Try adjusting your search terms or create a new session
+                  Try adjusting your search terms or create a new PeekList
                 </p>
                 <button onClick={handleCreateSession} className="btn-primary">
-                  Create New Session
+                  Create New PeekList
                 </button>
               </>
             ) : (
               <>
                 <Sparkles className="h-16 w-16 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-xl font-medium text-gray-900 mb-2">
-                  No sessions yet
+                  No Peeklists yet
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  Create your first idea session to get started with Whimsy Peek
+                  Create your first PeekList to get started with Whimsy Peek
                 </p>
                 <button onClick={handleCreateSession} className="btn-primary">
-                  Create Your First Session
+                  Create Your First PeekList
                 </button>
               </>
             )}
