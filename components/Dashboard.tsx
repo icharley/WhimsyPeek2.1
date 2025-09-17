@@ -183,7 +183,7 @@ export default function Dashboard({ user }: DashboardProps) {
               {user.name || user.email}'s PeekLists
             </h2>
             <p className="text-gray-600 mt-1">
-              ✨ Create a PeekList → hit the Peek 🎲 → Let Whimsy Decide!✨
+              ✨ Create PeekLists → hit the Peek 🎲 → Let Whimsy Decide!✨
             </p>
           </div>
           <button
